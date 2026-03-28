@@ -7,12 +7,12 @@ export function Footer() {
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
           <div className="col-span-1 md:col-span-1">
-            <Link href="/" className="flex items-center gap-2 mb-6">
-              <div className="bg-primary p-1.5 rounded-lg">
+            <Link href="/" className="flex items-center gap-2 mb-6 group">
+              <div className="bg-primary p-1.5 rounded-lg shadow-lg shadow-primary/20 group-hover:scale-110 transition-all">
                 <Rocket className="w-5 h-5 text-white" />
               </div>
-              <span className="text-xl font-bold tracking-tight text-foreground">
-                LaunchDesk
+              <span className="text-xl font-bold tracking-tight text-foreground group-hover:text-primary transition-colors italic">
+                Nexlify
               </span>
             </Link>
             <p className="text-sm text-muted-foreground leading-relaxed max-w-sm">
@@ -59,7 +59,7 @@ export function Footer() {
 
         <div className="pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-xs text-muted-foreground">
-            © {new Date().getFullYear()} LaunchDesk Inc. All rights reserved.
+            © {new Date().getFullYear()} Nexlify Inc. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
             <Link href="#" className="text-xs text-muted-foreground hover:text-primary">Privacy Policy</Link>

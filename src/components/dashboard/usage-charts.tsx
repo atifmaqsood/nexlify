@@ -13,6 +13,7 @@ import {
   Cell
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useEffect, useState } from "react";
 
 interface UsageChartsProps {
   usageData: Array<{ day: string; count: number }>;
@@ -20,6 +21,14 @@ interface UsageChartsProps {
 }
 
 export function UsageCharts({ usageData, typeData }: UsageChartsProps) {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) return <div className="h-[300px] w-full bg-muted/10 animate-pulse rounded-xl" />;
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       {/* Usage Over Time */}
@@ -29,43 +38,45 @@ export function UsageCharts({ usageData, typeData }: UsageChartsProps) {
             AI Usage (Last 7 Days)
           </CardTitle>
         </CardHeader>
-        <CardContent className="h-[300px] min-h-[300px] w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={usageData}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#1F2937" />
-              <XAxis 
-                dataKey="day" 
-                stroke="#9CA3AF" 
-                fontSize={12} 
-                tickLine={false} 
-                axisLine={false}
-              />
-              <YAxis 
-                stroke="#9CA3AF" 
-                fontSize={12} 
-                tickLine={false} 
-                axisLine={false}
-                tickFormatter={(value) => `${value}`}
-              />
-              <Tooltip 
-                contentStyle={{ 
-                  backgroundColor: "#111827", 
-                  borderColor: "#1F2937",
-                  borderRadius: "8px",
-                  color: "#F9FAFB"
-                }}
-                itemStyle={{ color: "#6366F1" }}
-              />
-              <Line 
-                type="monotone" 
-                dataKey="count" 
-                stroke="#6366F1" 
-                strokeWidth={3} 
-                dot={{ fill: "#6366F1", strokeWidth: 2, r: 4 }}
-                activeDot={{ r: 6, strokeWidth: 0 }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
+        <CardContent className="h-[300px] w-full">
+          <div className="h-full w-full">
+            <ResponsiveContainer width="100%" height="100%" minHeight={300}>
+              <LineChart data={usageData}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#1F2937" />
+                <XAxis 
+                  dataKey="day" 
+                  stroke="#9CA3AF" 
+                  fontSize={12} 
+                  tickLine={false} 
+                  axisLine={false}
+                />
+                <YAxis 
+                  stroke="#9CA3AF" 
+                  fontSize={12} 
+                  tickLine={false} 
+                  axisLine={false}
+                  tickFormatter={(value) => `${value}`}
+                />
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: "#111827", 
+                    borderColor: "#1F2937",
+                    borderRadius: "8px",
+                    color: "#F9FAFB"
+                  }}
+                  itemStyle={{ color: "#6366F1" }}
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="count" 
+                  stroke="#6366F1" 
+                  strokeWidth={3} 
+                  dot={{ fill: "#6366F1", strokeWidth: 2, r: 4 }}
+                  activeDot={{ r: 6, strokeWidth: 0 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
         </CardContent>
       </Card>
 
@@ -77,38 +88,40 @@ export function UsageCharts({ usageData, typeData }: UsageChartsProps) {
           </CardTitle>
         </CardHeader>
         <CardContent className="h-[300px] w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={typeData}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#1F2937" />
-              <XAxis 
-                dataKey="name" 
-                stroke="#9CA3AF" 
-                fontSize={10} 
-                tickLine={false} 
-                axisLine={false}
-              />
-              <YAxis 
-                stroke="#9CA3AF" 
-                fontSize={12} 
-                tickLine={false} 
-                axisLine={false}
-              />
-              <Tooltip 
-                contentStyle={{ 
-                  backgroundColor: "#111827", 
-                  borderColor: "#1F2937",
-                  borderRadius: "8px",
-                  color: "#F9FAFB"
-                }}
-                cursor={{ fill: "rgba(255,255,255,0.05)" }}
-              />
-              <Bar dataKey="count" radius={[4, 4, 0, 0]}>
-                {typeData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
+          <div className="h-full w-full">
+            <ResponsiveContainer width="100%" height="100%" minHeight={300}>
+              <BarChart data={typeData}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#1F2937" />
+                <XAxis 
+                  dataKey="name" 
+                  stroke="#9CA3AF" 
+                  fontSize={10} 
+                  tickLine={false} 
+                  axisLine={false}
+                />
+                <YAxis 
+                  stroke="#9CA3AF" 
+                  fontSize={12} 
+                  tickLine={false} 
+                  axisLine={false}
+                />
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: "#111827", 
+                    borderColor: "#1F2937",
+                    borderRadius: "8px",
+                    color: "#F9FAFB"
+                  }}
+                  cursor={{ fill: "rgba(255,255,255,0.05)" }}
+                />
+                <Bar dataKey="count" radius={[4, 4, 0, 0]}>
+                  {typeData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
         </CardContent>
       </Card>
     </div>

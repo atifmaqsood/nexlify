@@ -3,6 +3,7 @@
 import { auth } from "@clerk/nextjs/server";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 export async function getWorkspace() {
   const { userId } = await auth();
@@ -67,5 +68,80 @@ export async function inviteMember(email: string) {
   } catch (error) {
     console.error("INVITE_ERROR", error);
     return { success: false, error: "Failed to send invitation" };
+  }
+}
+
+/**
+ * Validates and accepts a workspace invitation.
+ */
+export async function acceptInvitation(token: string) {
+  try {
+    const { userId } = await auth();
+    if (!userId) throw new Error("Unauthorized");
+
+    // 1. Find the invitation
+    const { data: invitation, error: findError } = await supabaseAdmin
+      .from("invitations")
+      .select("*")
+      .eq("token", token)
+      .single();
+
+    if (findError || !invitation) {
+      return { error: "Invalid or expired invitation token." };
+    }
+
+    // 2. Check Expiry
+    if (new Date(invitation.expires_at) < new Date()) {
+      return { error: "This invitation has expired." };
+    }
+
+    // 3. Add to workspace members
+    const { error: joinError } = await supabaseAdmin
+      .from("workspace_members")
+      .insert({
+        workspace_id: invitation.workspace_id,
+        user_id: userId,
+        role: invitation.role || "member",
+      });
+
+    if (joinError) {
+      if (joinError.code === "23505") {
+        // Already a member
+        return { error: "You are already a member of this workspace." };
+      }
+      throw joinError;
+    }
+
+    // 4. Delete the invitation
+    await supabaseAdmin.from("invitations").delete().eq("id", invitation.id);
+
+    revalidatePath("/team");
+    return { success: true };
+  } catch (error) {
+    console.error("ACCEPT_INVITE_ERROR", error);
+    return { error: "An unexpected error occurred while accepting the invitation." };
+  }
+}
+
+/**
+ * Updates the workspace name/slug for the current owner.
+ */
+export async function updateWorkspace(name: string, slug?: string) {
+  try {
+    const { userId } = await auth();
+    if (!userId) throw new Error("Unauthorized");
+
+    const { error } = await supabaseAdmin
+      .from("workspaces")
+      .update({ name, slug })
+      .eq("owner_id", userId);
+
+    if (error) throw error;
+
+    revalidatePath("/settings");
+    return { success: true };
+  } catch (error) {
+    console.error("UPDATE_WORKSPACE_ERROR", error);
+    return { success: false, error: "Failed to update workspace." };
   }
 }

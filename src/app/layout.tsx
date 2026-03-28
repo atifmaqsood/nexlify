@@ -4,11 +4,12 @@ import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
 import { Toaster } from "@/components/ui/sonner";
+import { ui } from "@clerk/ui";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "LaunchDesk | Production-Ready AI SaaS",
+  title: "Nexlify | Industry-Standard AI SaaS",
   description: "The all-in-one platform for teams to generate, manage, and scale their AI-driven content strategy.",
 };
 
@@ -19,6 +20,7 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider
+      ui={ui}
       appearance={{
         baseTheme: dark,
         variables: {

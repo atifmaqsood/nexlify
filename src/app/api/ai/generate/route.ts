@@ -17,29 +17,46 @@ export async function POST(req: Request) {
     // 1. Initialize the official stable Google Generative AI SDK
     const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENERATIVE_AI_API_KEY!);
 
-    // 2. Explicitly request the "v1" stable API version to bypass v1beta restrictions
+    // 2. Use gemini-1.5-flash for the best balance of speed and quality
     const model = genAI.getGenerativeModel(
-      { model: "gemini-2.5-flash" },
+      { model: "gemini-1.5-flash" },
       { apiVersion: "v1" }
     );
 
+    // 3. Sophisticated System Prompts for Industry-Leading Output
+    const systemPrompts: Record<string, string> = {
+      "Blog Post Writer": `You are an elite SEO content strategist. Write a comprehensive, high-converting blog post.
+        Structure: Catchy Headline, Introduction with a hook, Multiple H2/H3 sections, Bullet points for readability, and a strong Call to Action.
+        Optimization: Natural integration of keywords.`,
+      "Email Copywriter": `You are a world-class direct response copywriter. Write a persuasive email.
+        Focus: Subject line that demands to be opened, personalized feel, clear pain point addressing, and a single undeniable Call to Action.`,
+      "Social Media": `You are a viral social media manager. Create engaging content for LinkedIn, Twitter, and Instagram.
+        Focus: Use intentional spacing, relevant emojis, and trending hooks to maximize engagement and shareability.`,
+      "Product Description": `You are a luxury e-commerce specialist. Write an irresistible product description.
+        Focus: Highlight benefits over features, create a sense of belonging or status, and use sensory language to drive sales.`,
+    };
+
+    const toolPrompt = systemPrompts[tool] || "You are an expert AI content creator.";
+
     const prompt = `
-      You are an expert AI content creator. Create content for a ${tool}.
+      ${toolPrompt}
+      
       Topic: ${topic}
       Tone: ${tone}
       Length: ${length}
       Keywords: ${keywords || "none"}
       
-      Ensure the content is high-quality, engaging, and professional.
+      IMPORTANT: Return the content in beautifully formatted Markdown. 
+      Ensure the output is high-impact, industry-standard content.
     `;
 
-    // 3. Start streaming
+    // 4. Start streaming
     const result = await model.generateContentStream(prompt);
 
     const encoder = new TextEncoder();
     let fullText = "";
 
-    // 4. Create a ReadableStream for the frontend
+    // 5. Create a ReadableStream for the frontend
     const stream = new ReadableStream({
       async start(controller) {
         try {
@@ -51,10 +68,9 @@ export async function POST(req: Request) {
             }
           }
 
-          // 5. Save to history once complete
+          // 6. Save to history once complete
           if (fullText) {
             try {
-              // A. Find or create a workspace for the user (required for foreign key)
               let { data: workspace, error: wsError } = await supabaseAdmin
                 .from("workspaces")
                 .select("id")
@@ -62,7 +78,6 @@ export async function POST(req: Request) {
                 .single();
 
               if (wsError && wsError.code === "PGRST116") {
-                // If no workspace found, create a default one
                 const { data: newWs, error: createError } = await supabaseAdmin
                   .from("workspaces")
                   .insert({
@@ -75,11 +90,8 @@ export async function POST(req: Request) {
                 
                 if (createError) throw createError;
                 workspace = newWs;
-              } else if (wsError) {
-                throw wsError;
               }
 
-              // B. Insert into history with workspace and user ID
               const { error: insertError } = await supabaseAdmin
                 .from("ai_generations")
                 .insert({
@@ -90,9 +102,7 @@ export async function POST(req: Request) {
                   output: fullText,
                 });
 
-              if (insertError) {
-                console.error("SUPABASE_INSERT_ERROR:", insertError);
-              }
+              if (insertError) console.error("HISTORY_SAVE_ERROR:", insertError);
             } catch (e) {
               console.error("HISTORY_PERSISTENCE_FAILED", e);
             }

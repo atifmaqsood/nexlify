@@ -27,6 +27,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
+  DialogTrigger
 } from "@/components/ui/dialog";
 
 const tools = [
@@ -167,14 +168,9 @@ export default function AIToolsPage() {
                         </span>
                       </div>
                       <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
-                          className="h-7 w-7 text-muted-foreground hover:text-primary"
-                          onClick={() => setSelectedGeneration(item)}
-                        >
+                        <DialogTrigger className="h-7 w-7 text-muted-foreground hover:text-primary rounded-md inline-flex items-center justify-center transition-colors">
                           <Maximize2 className="w-4 h-4" />
-                        </Button>
+                        </DialogTrigger>
                         <Button 
                           variant="ghost" 
                           size="icon" 

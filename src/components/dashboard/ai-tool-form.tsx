@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Sparkles, Copy, Save, Loader2, RotateCcw } from "lucide-react";
+import { Sparkles, Copy, Loader2, RotateCcw, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -82,7 +82,7 @@ export function AIToolForm({ toolType, promptTemplate }: AIToolFormProps) {
         }
       }
       
-      toast.success("Generation complete!");
+      toast.success("Generation complete and saved to history!");
     } catch (error) {
       toast.error("Something went wrong. Please try again.");
       console.error(error);
@@ -96,9 +96,10 @@ export function AIToolForm({ toolType, promptTemplate }: AIToolFormProps) {
     toast.success("Copied to clipboard!");
   };
 
-  const handleSave = async () => {
-    // This will be implemented with Supabase later
-    toast.success("Saved to history!");
+  const handleReset = () => {
+    setOutput("");
+    setHasGenerated(false);
+    form.reset();
   };
 
   return (
@@ -119,9 +120,9 @@ export function AIToolForm({ toolType, promptTemplate }: AIToolFormProps) {
                 name="topic"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Topic / Title</FormLabel>
+                    <FormLabel className="text-sm font-bold text-foreground italic px-1">Topic / Title</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g. Benefits of Remote Work" {...field} className="bg-muted/30" />
+                      <Input placeholder="e.g. Benefits of Remote Work" {...field} className="bg-muted/30 h-11 border-border font-medium" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -134,14 +135,14 @@ export function AIToolForm({ toolType, promptTemplate }: AIToolFormProps) {
                   name="tone"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Tone</FormLabel>
+                      <FormLabel className="text-sm font-bold text-foreground italic px-1">Tone</FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
-                          <SelectTrigger className="bg-muted/30">
+                          <SelectTrigger className="bg-muted/30 h-11 border-border font-medium">
                             <SelectValue placeholder="Select tone" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent>
+                        <SelectContent className="bg-card border-border">
                           <SelectItem value="professional">Professional</SelectItem>
                           <SelectItem value="casual">Casual</SelectItem>
                           <SelectItem value="witty">Witty</SelectItem>
@@ -158,14 +159,14 @@ export function AIToolForm({ toolType, promptTemplate }: AIToolFormProps) {
                   name="length"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Length</FormLabel>
+                      <FormLabel className="text-sm font-bold text-foreground italic px-1">Length</FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
-                          <SelectTrigger className="bg-muted/30">
+                          <SelectTrigger className="bg-muted/30 h-11 border-border font-medium">
                             <SelectValue placeholder="Select length" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent>
+                        <SelectContent className="bg-card border-border">
                           <SelectItem value="short">Short</SelectItem>
                           <SelectItem value="medium">Medium</SelectItem>
                           <SelectItem value="long">Long</SelectItem>
@@ -182,9 +183,9 @@ export function AIToolForm({ toolType, promptTemplate }: AIToolFormProps) {
                 name="keywords"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Keywords (Optional)</FormLabel>
+                    <FormLabel className="text-sm font-bold text-foreground italic px-1">Keywords (Optional)</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g. productivity, saas, growth" {...field} className="bg-muted/30" />
+                      <Input placeholder="e.g. productivity, saas, growth" {...field} className="bg-muted/30 h-11 border-border font-medium" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -193,13 +194,13 @@ export function AIToolForm({ toolType, promptTemplate }: AIToolFormProps) {
 
               <Button 
                 type="submit" 
-                className="w-full bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20 h-11"
+                className="w-full bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20 h-11 font-bold italic tracking-wide"
                 disabled={isGenerating}
               >
                 {isGenerating ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Generating...
+                    Generating Magic...
                   </>
                 ) : (
                   <>
@@ -216,40 +217,42 @@ export function AIToolForm({ toolType, promptTemplate }: AIToolFormProps) {
       {/* Output Display */}
       <Card className="bg-card border-border shadow-soft flex flex-col min-h-[400px]">
         <CardHeader className="flex flex-row items-center justify-between border-b border-border/50 pb-4">
-          <CardTitle className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
-            Output
+          <CardTitle className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-muted-foreground/60 italic flex items-center gap-2">
+            Output Results
+            {!isGenerating && output && (
+              <span className="flex items-center gap-1 text-success lowercase tracking-normal font-bold">
+                <CheckCircle2 className="w-3 h-3" /> saved
+              </span>
+            )}
           </CardTitle>
           {hasGenerated && (
             <div className="flex items-center gap-2">
-              <Button variant="ghost" size="icon" onClick={() => { setOutput(""); setHasGenerated(false); }} className="h-8 w-8">
+              <Button variant="ghost" size="icon" onClick={handleReset} className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted">
                 <RotateCcw className="w-4 h-4" />
               </Button>
-              <Button variant="ghost" size="icon" onClick={copyToClipboard} className="h-8 w-8">
+              <Button variant="ghost" size="icon" onClick={copyToClipboard} className="h-8 w-8 text-muted-foreground hover:text-primary hover:bg-primary/10">
                 <Copy className="w-4 h-4" />
-              </Button>
-              <Button variant="ghost" size="icon" onClick={handleSave} className="h-8 w-8 text-primary">
-                <Save className="w-4 h-4" />
               </Button>
             </div>
           )}
         </CardHeader>
-        <CardContent className="flex-1 p-6 overflow-y-auto">
+        <CardContent className="flex-1 p-6 overflow-y-auto custom-scrollbar">
           {!hasGenerated ? (
-            <div className="h-full flex flex-col items-center justify-center text-center opacity-50">
-              <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
+            <div className="h-full flex flex-col items-center justify-center text-center opacity-40 py-20 grayscale">
+              <div className="w-16 h-16 rounded-2xl border-2 border-dashed border-muted-foreground flex items-center justify-center mb-6 ring-8 ring-muted/50">
                 <Sparkles className="w-8 h-8 text-muted-foreground" />
               </div>
-              <h3 className="font-bold text-lg mb-2 text-foreground">Ready to generate?</h3>
-              <p className="text-sm text-muted-foreground max-w-[250px]">
-                Fill out the form and click generate to see the magic happen.
+              <h3 className="font-bold text-lg mb-2 text-foreground uppercase tracking-widest italic">Awaiting Input</h3>
+              <p className="text-xs text-muted-foreground max-w-[250px] font-medium leading-relaxed italic">
+                Configure your request on the left and see the AI content appear here in real-time.
               </p>
             </div>
           ) : (
             <div className={cn(
-              "whitespace-pre-wrap text-foreground leading-relaxed transition-opacity duration-500",
+              "whitespace-pre-wrap text-foreground leading-relaxed transition-opacity duration-500 font-medium",
               isGenerating ? "opacity-70" : "opacity-100"
             )}>
-              {output || (isGenerating && "Initializing AI model...")}
+              {output || (isGenerating && <span className="text-primary italic font-bold">Initializing Gemini 1.5 engine...</span>)}
               {isGenerating && (
                 <span className="inline-block w-2 h-4 bg-primary animate-pulse ml-1 align-middle" />
               )}
