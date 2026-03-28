@@ -1,4 +1,5 @@
 import { stripe } from "@/lib/stripe";
+import { supabaseAdmin } from "@/lib/supabase-admin";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
@@ -15,6 +16,19 @@ export async function POST(req: Request) {
 
     const { priceId, workspaceId } = await req.json();
 
+    // 1. Resolve Workspace ID if "default" was passed
+    let targetWorkspaceId = workspaceId;
+    if (targetWorkspaceId === "default") {
+      const { data: ws } = await supabaseAdmin
+        .from("workspaces")
+        .select("id")
+        .eq("owner_id", userId)
+        .single();
+      
+      targetWorkspaceId = ws?.id || "personal";
+    }
+
+    // 2. Create Stripe Checkout Session
     const stripeSession = await stripe.checkout.sessions.create({
       success_url: absoluteUrl("/billing?success=1"),
       cancel_url: absoluteUrl("/billing?canceled=1"),
@@ -30,7 +44,7 @@ export async function POST(req: Request) {
       ],
       metadata: {
         userId,
-        workspaceId,
+        workspaceId: targetWorkspaceId,
       },
     });
 

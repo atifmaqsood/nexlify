@@ -14,31 +14,19 @@ import {
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-const usageData = [
-  { day: "01", count: 42 },
-  { day: "05", count: 128 },
-  { day: "10", count: 86 },
-  { day: "15", count: 154 },
-  { day: "20", count: 210 },
-  { day: "25", count: 180 },
-  { day: "30", count: 245 },
-];
+interface UsageChartsProps {
+  usageData: Array<{ day: string; count: number }>;
+  typeData: Array<{ name: string; count: number; color: string }>;
+}
 
-const typeData = [
-  { name: "Blog Posts", count: 450, color: "#6366F1" },
-  { name: "Emails", count: 320, color: "#8B5CF6" },
-  { name: "Social Media", count: 280, color: "#10B981" },
-  { name: "Product", count: 180, color: "#F59E0B" },
-];
-
-export function UsageCharts() {
+export function UsageCharts({ usageData, typeData }: UsageChartsProps) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       {/* Usage Over Time */}
       <Card className="bg-card border-border shadow-soft">
         <CardHeader>
           <CardTitle className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
-            AI Usage (Last 30 Days)
+            AI Usage (Last 7 Days)
           </CardTitle>
         </CardHeader>
         <CardContent className="h-[300px] min-h-[300px] w-full">

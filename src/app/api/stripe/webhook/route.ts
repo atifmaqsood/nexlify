@@ -1,5 +1,5 @@
 import { stripe } from "@/lib/stripe";
-import { supabase } from "@/lib/supabase";
+import { supabaseAdmin } from "@/lib/supabase-admin";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
@@ -27,19 +27,34 @@ export async function POST(req: Request) {
       session.subscription as string
     );
 
-    if (!session?.metadata?.workspaceId) {
-      return new NextResponse("Workspace ID is required", { status: 400 });
+    if (!session?.metadata?.workspaceId || !session?.metadata?.userId) {
+      return new NextResponse("Metadata is required", { status: 400 });
     }
 
-    // Update workspace plan and stripe info in Supabase
-    await supabase
+    // 1. Update workspace plan and stripe info
+    const { error: wsError } = await supabaseAdmin
       .from("workspaces")
       .update({
         stripe_customer_id: session.customer as string,
         stripe_subscription_id: subscription.id,
-        plan: "PRO", // Simplified for now
+        plan: "PRO",
       })
       .eq("id", session.metadata.workspaceId);
+
+    if (wsError) throw wsError;
+
+    // 2. Initialize Usage Limits for the new period
+    const currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM
+    const { error: usageError } = await supabaseAdmin
+      .from("usage_limits")
+      .upsert({
+        workspace_id: session.metadata.workspaceId,
+        month_year: currentMonth,
+        generation_count: 0,
+        reset_at: new Date(subscription.current_period_end * 1000).toISOString(),
+      }, { onConflict: "workspace_id, month_year" });
+
+    if (usageError) console.error("USAGE_LIMIT_INIT_ERROR", usageError);
   }
 
   if (event.type === "invoice.payment_succeeded") {
@@ -47,8 +62,8 @@ export async function POST(req: Request) {
       session.subscription as string
     );
 
-    // Update the subscription details (e.g., current period end)
-    await supabase
+    // Update the subscription details (renewing the plan)
+    await supabaseAdmin
       .from("workspaces")
       .update({
         plan: "PRO",

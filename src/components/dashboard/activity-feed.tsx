@@ -12,53 +12,21 @@ import {
   UserPlus as UserPlusIcon,
   CreditCard as CreditCardIcon
 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
+import { formatDistanceToNow } from "date-fns";
 
-const activities = [
-  {
-    id: 1,
-    tool: "Blog Post Writer",
-    summary: "How to scale a SaaS in 2026...",
-    time: "2 mins ago",
-    icon: FileTextIcon,
-    color: "text-primary",
-  },
-  {
-    id: 2,
-    tool: "Email Copywriter",
-    summary: "Cold outreach for VCs",
-    time: "15 mins ago",
-    icon: MailIcon,
-    color: "text-accent",
-  },
-  {
-    id: 3,
-    tool: "Social Media",
-    summary: "Product launch announcement",
-    time: "1 hour ago",
-    icon: Share2Icon,
-    color: "text-success",
-  },
-  {
-    id: 4,
-    tool: "Product Description",
-    summary: "Next-gen AI dashboard features",
-    time: "3 hours ago",
-    icon: SparklesIcon,
-    color: "text-warning",
-  },
-  {
-    id: 5,
-    tool: "Blog Post Writer",
-    summary: "Future of Agentic Coding",
-    time: "5 hours ago",
-    icon: FileTextIcon,
-    color: "text-primary",
-  },
-];
+interface ActivityFeedProps {
+  recentActivity: any[];
+}
 
-export function ActivityFeed() {
+const toolConfig: Record<string, { icon: any; color: string }> = {
+  "Blog Post Writer": { icon: FileTextIcon, color: "text-primary" },
+  "Email Copywriter": { icon: MailIcon, color: "text-accent" },
+  "Social Media": { icon: Share2Icon, color: "text-success" },
+  "Product Description": { icon: SparklesIcon, color: "text-warning" },
+};
+
+export function ActivityFeed({ recentActivity }: ActivityFeedProps) {
   return (
     <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
       {/* Recent Activity */}
@@ -75,22 +43,38 @@ export function ActivityFeed() {
         </CardHeader>
         <CardContent>
           <div className="space-y-6">
-            {activities.map((activity) => (
-              <div key={activity.id} className="flex items-start gap-4 group">
-                <div className={`mt-1 p-2 rounded-lg bg-muted/50 ${activity.color}`}>
-                  <activity.icon className="w-4 h-4" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between mb-1">
-                    <h4 className="text-sm font-bold text-foreground group-hover:text-primary transition-colors">{activity.tool}</h4>
-                    <span className="text-[10px] text-muted-foreground flex items-center gap-1 font-medium">
-                      <ClockIcon className="w-3 h-3" /> {activity.time}
-                    </span>
-                  </div>
-                  <p className="text-sm text-muted-foreground truncate italic">"{activity.summary}"</p>
-                </div>
+            {recentActivity.length === 0 ? (
+              <div className="py-12 text-center text-muted-foreground italic text-sm">
+                No recent activity. Start generating to see it here!
               </div>
-            ))}
+            ) : (
+              recentActivity.map((activity) => {
+                const config = toolConfig[activity.tool_type] || { icon: SparklesIcon, color: "text-muted-foreground" };
+                const Icon = config.icon;
+                
+                return (
+                  <div key={activity.id} className="flex items-start gap-4 group">
+                    <div className={`mt-1 p-2 rounded-lg bg-muted/50 ${config.color}`}>
+                      <Icon className="w-4 h-4" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between mb-1">
+                        <h4 className="text-sm font-bold text-foreground group-hover:text-primary transition-colors">
+                          {activity.tool_type}
+                        </h4>
+                        <span className="text-[10px] text-muted-foreground flex items-center gap-1 font-medium">
+                          <ClockIcon className="w-3 h-3" /> 
+                          {formatDistanceToNow(new Date(activity.created_at), { addSuffix: true })}
+                        </span>
+                      </div>
+                      <p className="text-sm text-muted-foreground truncate italic">
+                        "{activity.prompt}"
+                      </p>
+                    </div>
+                  </div>
+                );
+              })
+            )}
           </div>
         </CardContent>
       </Card>
