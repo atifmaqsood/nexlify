@@ -49,72 +49,53 @@
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --background: #0A0F1E;
+  --foreground: #F9FAFB;
+  --card: #111827;
+  --card-foreground: #F9FAFB;
+  --popover: #111827;
+  --popover-foreground: #F9FAFB;
+  --primary: #6366F1;
+  --primary-foreground: #FFFFFF;
+  --secondary: #1F2937;
+  --secondary-foreground: #F9FAFB;
+  --muted: #1F2937;
+  --muted-foreground: #9CA3AF;
+  --accent: #8B5CF6;
+  --accent-foreground: #FFFFFF;
+  --destructive: #EF4444;
+  --destructive-foreground: #FFFFFF;
+  --border: #1F2937;
+  --input: #1F2937;
+  --ring: #6366F1;
+  --chart-1: #6366F1;
+  --chart-2: #8B5CF6;
+  --chart-3: #10B981;
+  --chart-4: #F59E0B;
+  --chart-5: #EF4444;
+  --radius: 0.75rem;
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --background: #0A0F1E;
+  --foreground: #F9FAFB;
+  --card: #111827;
+  --card-foreground: #F9FAFB;
+  --popover: #111827;
+  --popover-foreground: #F9FAFB;
+  --primary: #6366F1;
+  --primary-foreground: #FFFFFF;
+  --secondary: #1F2937;
+  --secondary-foreground: #F9FAFB;
+  --muted: #1F2937;
+  --muted-foreground: #9CA3AF;
+  --accent: #8B5CF6;
+  --accent-foreground: #FFFFFF;
+  --destructive: #EF4444;
+  --destructive-foreground: #FFFFFF;
+  --border: #1F2937;
+  --input: #1F2937;
+  --ring: #6366F1;
 }
 
 @layer base {
@@ -127,4 +108,93 @@
   html {
     @apply font-sans;
   }
+}
+
+/* Clerk Component Overrides for High Contrast Dark Mode */
+[class^="cl-"],
+[class*=" cl-"],
+.cl-rootBox,
+.cl-rootBox *,
+.cl-userButtonPopoverCard *,
+.cl-organizationProfile *,
+.cl-userProfile *,
+.cl-signIn *,
+.cl-signUp *,
+.cl-headerTitle, 
+.cl-card h1,
+.cl-card h2,
+.cl-userProfileLabel,
+.cl-organizationProfileLabel,
+.cl-formFieldLabel,
+.cl-label,
+.cl-navbarButton,
+.cl-breadcrumbsItem,
+.cl-pageTitle,
+.cl-profileSectionTitleText,
+.cl-headerSubtitle,
+.cl-footerActionLink,
+.cl-identityPreviewText,
+.cl-userButtonOuter,
+.cl-userButtonBox,
+.cl-organizationPreviewMainIdentifier {
+  color: #FFFFFF !important;
+}
+
+/* Secondary/Muted Text Overrides */
+.cl-headerSubtitle,
+.cl-userProfileSecondaryLink,
+.cl-formFieldDescription,
+.cl-breadcrumbsSeparator,
+.cl-identityPreviewSecondaryIdentifier,
+.cl-profileSectionSubtitleText,
+.cl-userButtonSecondaryIdentifier,
+.cl-organizationPreviewSecondaryIdentifier,
+.cl-formFieldInput__error,
+.cl-formFieldErrorText {
+  color: #94A3B8 !important; /* Slightly dimmed but still readable */
+}
+
+/* Ensure active/primary elements stay primary */
+.cl-primaryButton,
+.cl-formButtonPrimary {
+  color: #FFFFFF !important;
+  background-color: #6366F1 !important;
+}
+
+.cl-card {
+  background-color: #0A0F1E !important;
+  border: 1px solid #1F2937 !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+}
+
+.cl-navbar {
+  background-color: #0F172A !important;
+  border-right: 1px solid #1F2937 !important;
+}
+
+.cl-scrollBox {
+  background: transparent !important;
+}
+
+.cl-sidebar, .cl-userProfileNavbar, .cl-navbar {
+  background-color: #0A0F1E !important;
+}
+
+.cl-pageScrollBox {
+  background-color: #0A0F1E !important;
+}
+
+.cl-modalBackdrop {
+  background-color: rgba(0, 0, 0, 0.65) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+}
+
+.cl-modalCloseButton {
+  color: #FFFFFF !important;
+  opacity: 0.5;
+}
+
+.cl-modalCloseButton:hover {
+  opacity: 1;
 }
