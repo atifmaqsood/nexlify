@@ -26,7 +26,7 @@ export default function SignInPage() {
             footerActionText: "text-[#9CA3AF]",
             footerActionLink: "text-primary hover:text-primary/90",
           },
-        }}
+        } as any}
         routing="path"
         path="/sign-in"
         fallbackRedirectUrl="/dashboard"

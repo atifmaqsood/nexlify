@@ -32,7 +32,7 @@ export default function RootLayout({
           colorInputText: "#FFFFFF",
           colorAlpha: "1",
         },
-      }}
+      } as any}
     >
       <html lang="en" className="dark" suppressHydrationWarning>
         <body className={`${inter.className} antialiased bg-background text-foreground`} suppressHydrationWarning>

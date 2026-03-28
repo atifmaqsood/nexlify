@@ -5,13 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Rocket, LayoutDashboard, LogIn, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
-import { 
-  ClerkProvider, 
-  SignedIn, 
-  SignedOut, 
-  SignInButton, 
-  UserButton 
-} from "@clerk/nextjs";
+import * as Clerk from "@clerk/nextjs";
+const { SignedIn, SignedOut, UserButton, SignInButton } = Clerk as any;
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);

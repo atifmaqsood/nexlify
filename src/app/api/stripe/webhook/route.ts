@@ -51,7 +51,7 @@ export async function POST(req: Request) {
         workspace_id: session.metadata.workspaceId,
         month_year: currentMonth,
         generation_count: 0,
-        reset_at: new Date(subscription.current_period_end * 1000).toISOString(),
+        reset_at: new Date((subscription as any).current_period_end * 1000).toISOString(),
       }, { onConflict: "workspace_id, month_year" });
 
     if (usageError) console.error("USAGE_LIMIT_INIT_ERROR", usageError);
