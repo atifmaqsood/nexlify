@@ -38,16 +38,10 @@ import {
   SelectValue 
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { 
-  MoreHorizontal, 
-  UserPlus, 
-  Shield, 
-  ShieldCheck, 
-  Eye, 
-  UserMinus,
-  Mail
-} from "lucide-react";
+import { MoreHorizontal, UserPlus, Shield, ShieldCheck, Eye, UserMinus, Mail, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/lib/supabase";
+import { useUser } from "@clerk/nextjs";
 
 const members = [
   {
@@ -77,13 +71,38 @@ const members = [
 ];
 
 export default function TeamPage() {
+  const { user } = useUser();
   const [isInviteOpen, setIsInviteOpen] = useState(false);
+  const [isInviting, setIsInviting] = useState(false);
+  const [inviteEmail, setInviteEmail] = useState("");
+  const [inviteRole, setInviteRole] = useState("Member");
 
-  const handleInvite = (e: React.FormEvent) => {
+  const handleInvite = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast.success("Invitation sent successfully!");
-    setIsInviteOpen(false);
+    setIsInviting(true);
+    
+    try {
+      const { error } = await supabase.from("invitations").insert({
+        email: inviteEmail,
+        role: inviteRole.toLowerCase(),
+        workspace_id: "default", // Should be real workspace ID
+        token: Math.random().toString(36).substring(2, 15),
+        expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+      });
+
+      if (error) throw error;
+      
+      toast.success("Invitation sent successfully!");
+      setIsInviteOpen(false);
+      setInviteEmail("");
+    } catch (error) {
+      console.error("INVITE_ERROR", error);
+      toast.error("Failed to send invitation.");
+    } finally {
+      setIsInviting(false);
+    }
   };
+
 
   const getRoleBadge = (role: string) => {
     switch (role) {
@@ -105,7 +124,7 @@ export default function TeamPage() {
         </div>
         
         <Dialog open={isInviteOpen} onOpenChange={setIsInviteOpen}>
-          <DialogTrigger asChild>
+          <DialogTrigger>
             <Button className="bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20 gap-2">
               <UserPlus className="w-4 h-4" /> Invite Member
             </Button>
@@ -122,12 +141,18 @@ export default function TeamPage() {
                 <label className="text-sm font-medium">Email Address</label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input placeholder="name@example.com" className="pl-9 bg-muted/30" required />
+                  <Input 
+                    placeholder="name@example.com" 
+                    className="pl-9 bg-muted/30" 
+                    required 
+                    value={inviteEmail}
+                    onChange={(e) => setInviteEmail(e.target.value)}
+                  />
                 </div>
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium">Role</label>
-                <Select defaultValue="Member">
+                <Select value={inviteRole} onValueChange={(val) => setInviteRole(val || "Member")}>
                   <SelectTrigger className="bg-muted/30">
                     <SelectValue placeholder="Select role" />
                   </SelectTrigger>
@@ -140,7 +165,16 @@ export default function TeamPage() {
               </div>
               <DialogFooter className="pt-4">
                 <Button type="button" variant="ghost" onClick={() => setIsInviteOpen(false)}>Cancel</Button>
-                <Button type="submit" className="bg-primary hover:bg-primary/90 text-white">Send Invite</Button>
+                <Button type="submit" className="bg-primary hover:bg-primary/90 text-white" disabled={isInviting}>
+                  {isInviting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Sending...
+                    </>
+                  ) : (
+                    "Send Invite"
+                  )}
+                </Button>
               </DialogFooter>
             </form>
           </DialogContent>
@@ -176,7 +210,7 @@ export default function TeamPage() {
                 <TableCell className="text-sm text-muted-foreground">{member.joined}</TableCell>
                 <TableCell className="text-right">
                   <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
+                    <DropdownMenuTrigger>
                       <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground">
                         <MoreHorizontal className="w-4 h-4" />
                       </Button>

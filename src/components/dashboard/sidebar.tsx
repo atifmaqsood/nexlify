@@ -116,7 +116,6 @@ export function Sidebar({ className }: { className?: string }) {
       <div className={cn("p-4 border-t border-border mt-auto", isCollapsed ? "flex flex-col items-center gap-4" : "flex items-center justify-between")}>
         <div className="flex items-center gap-3">
           <UserButton
-            afterSignOutUrl="/"
             appearance={{
               elements: {
                 userButtonAvatarBox: "w-9 h-9 border border-border shadow-sm",
@@ -148,10 +147,8 @@ export function MobileNav() {
       </Link>
       
       <Sheet>
-        <SheetTrigger asChild>
-          <Button variant="ghost" size="icon">
-            <Menu className="w-6 h-6" />
-          </Button>
+        <SheetTrigger render={<button type="button" className="md:hidden flex items-center justify-center w-10 h-10 rounded-lg hover:bg-muted cursor-pointer transition-colors" />}>
+          <Menu className="w-6 h-6" />
         </SheetTrigger>
         <SheetContent side="left" className="p-0 border-r border-border bg-card">
           <Sidebar className="w-full border-none" />

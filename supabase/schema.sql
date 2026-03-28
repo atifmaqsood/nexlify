@@ -64,45 +64,37 @@ ALTER TABLE ai_generations ENABLE ROW LEVEL SECURITY;
 ALTER TABLE usage_limits ENABLE ROW LEVEL SECURITY;
 ALTER TABLE invitations ENABLE ROW LEVEL SECURITY;
 
--- Workspace Policies: Only owners or members can see/edit
-CREATE POLICY "Users can view workspaces they are members of"
+-- Workspace Policies: Only owners can see/edit their own workspaces
+CREATE POLICY "Users can view their own workspaces"
 ON workspaces FOR SELECT
-USING (
-    EXISTS (
-        SELECT 1 FROM workspace_members 
-        WHERE workspace_members.workspace_id = workspaces.id 
-        AND workspace_members.user_id = auth.uid()::text
-    ) OR owner_id = auth.uid()::text
-);
+USING (owner_id = auth.uid()::text);
 
--- Member Policies
-CREATE POLICY "Users can view members of their workspaces"
+CREATE POLICY "Users can manage their own workspaces"
+ON workspaces FOR ALL
+USING (owner_id = auth.uid()::text);
+
+-- Member Policies: Users can see a workspace's members if they belong to it
+-- We avoid recursion by NOT querying workspace_members within its own policy
+CREATE POLICY "Users can view their own membership"
+ON workspace_members FOR SELECT
+USING (user_id = auth.uid()::text);
+
+CREATE POLICY "Users can see other members of a workspace if it belongs to them"
+-- Instead of checking members, we check the workspace table owner
 ON workspace_members FOR SELECT
 USING (
-    EXISTS (
-        SELECT 1 FROM workspace_members AS current_members
-        WHERE current_members.workspace_id = workspace_members.workspace_id 
-        AND current_members.user_id = auth.uid()::text
-    )
+  EXISTS(SELECT 1 FROM workspaces WHERE workspaces.id = workspace_members.workspace_id AND workspaces.owner_id = auth.uid()::text)
 );
 
 -- Generation Policies
-CREATE POLICY "Users can view generations in their workspaces"
+CREATE POLICY "Users can view their own generations"
 ON ai_generations FOR SELECT
-USING (
-    EXISTS (
-        SELECT 1 FROM workspace_members 
-        WHERE workspace_members.workspace_id = ai_generations.workspace_id 
-        AND workspace_members.user_id = auth.uid()::text
-    )
-);
+USING (user_id = auth.uid()::text);
 
-CREATE POLICY "Users can create generations in their workspaces"
+CREATE POLICY "Users can create their own generations"
 ON ai_generations FOR INSERT
-WITH CHECK (
-    EXISTS (
-        SELECT 1 FROM workspace_members 
-        WHERE workspace_members.workspace_id = ai_generations.workspace_id 
-        AND workspace_members.user_id = auth.uid()::text
-    )
-);
+WITH CHECK (user_id = auth.uid()::text);
+
+CREATE POLICY "Users can delete their own generations"
+ON ai_generations FOR DELETE
+USING (user_id = auth.uid()::text);

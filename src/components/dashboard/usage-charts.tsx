@@ -41,7 +41,7 @@ export function UsageCharts() {
             AI Usage (Last 30 Days)
           </CardTitle>
         </CardHeader>
-        <CardContent className="h-[300px] w-full">
+        <CardContent className="h-[300px] min-h-[300px] w-full">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={usageData}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#1F2937" />

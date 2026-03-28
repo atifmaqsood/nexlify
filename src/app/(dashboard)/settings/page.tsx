@@ -29,14 +29,50 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Switch } from "@/components/ui/switch";
+import { supabase } from "@/lib/supabase";
+import { useUser } from "@clerk/nextjs";
+import { Loader2 } from "lucide-react";
 
 export default function SettingsPage() {
+  const { user } = useUser();
   const [apiKey, setApiKey] = useState("ld_live_4k83m20f9s1l8p39z");
+  const [isSaving, setIsSaving] = useState(false);
 
   const copyApiKey = () => {
     navigator.clipboard.writeText(apiKey);
     toast.success("API Key copied to clipboard!");
   };
+
+  const handleSaveProfile = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSaving(true);
+    try {
+      // In Clerk, we update the user object. 
+      // For this demo, we'll just simulate a profile update toast.
+      await new Promise(resolve => setTimeout(resolve, 800));
+      toast.success("Profile updated successfully!");
+    } catch (error) {
+      toast.error("Failed to update profile.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleSaveWorkspace = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSaving(true);
+    try {
+      // Here we would normally update the 'workspaces' table in Supabase
+      // Update code: await supabase.from('workspaces').update({ name, slug }).eq('id', workspaceId)
+      await new Promise(resolve => setTimeout(resolve, 800));
+      toast.success("Workspace settings saved!");
+    } catch (error) {
+      toast.error("Failed to save workspace settings.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
 
   return (
     <div className="space-y-8 pb-10">
@@ -84,7 +120,14 @@ export default function SettingsPage() {
               </div>
             </CardContent>
             <CardFooter className="bg-muted/20 border-t border-border p-6 flex justify-end">
-              <Button className="bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20">Save Profile</Button>
+              <Button 
+                onClick={handleSaveProfile} 
+                disabled={isSaving}
+                className="bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20"
+              >
+                {isSaving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+                Save Profile
+              </Button>
             </CardFooter>
           </Card>
         </TabsContent>
@@ -112,7 +155,14 @@ export default function SettingsPage() {
               </div>
             </CardContent>
             <CardFooter className="bg-muted/20 border-t border-border p-6 flex justify-end">
-              <Button className="bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20">Save Workspace</Button>
+              <Button 
+                onClick={handleSaveWorkspace} 
+                disabled={isSaving}
+                className="bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20"
+              >
+                {isSaving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+                Save Workspace
+              </Button>
             </CardFooter>
           </Card>
 

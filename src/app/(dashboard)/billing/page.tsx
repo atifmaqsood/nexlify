@@ -22,6 +22,9 @@ import {
   TableRow 
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { useState } from "react";
+import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
 
 const invoices = [
   { id: "INV-001", date: "Mar 01, 2026", amount: "$29.00", status: "Paid" },
@@ -30,6 +33,33 @@ const invoices = [
 ];
 
 export default function BillingPage() {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleUpgrade = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch("/api/stripe/checkout", {
+        method: "POST",
+        body: JSON.stringify({
+          priceId: "price_1QxXXXXXXXXXXXX", // This should be your real Stripe Price ID
+          workspaceId: "default", // Should be real workspace ID if multi-tenant is active
+        }),
+      });
+
+      const data = await response.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error("No checkout URL returned");
+      }
+    } catch (error) {
+      console.error("STRIPE_CHECKOUT_ERROR", error);
+      toast.error("Failed to initiate checkout. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="space-y-8 pb-10">
       <div>
@@ -83,8 +113,21 @@ export default function BillingPage() {
             </div>
             <div className="flex items-center gap-3">
               <Button variant="ghost" className="text-destructive hover:bg-destructive/10">Cancel Subscription</Button>
-              <Button className="bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20 gap-2">
-                Upgrade Plan <ArrowUpRight className="w-4 h-4" />
+              <Button 
+                className="bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20 gap-2"
+                onClick={handleUpgrade}
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Redirecting...
+                  </>
+                ) : (
+                  <>
+                    Upgrade Plan <ArrowUpRight className="w-4 h-4" />
+                  </>
+                )}
               </Button>
             </div>
           </CardFooter>
