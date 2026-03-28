@@ -168,9 +168,14 @@ export default function AIToolsPage() {
                         </span>
                       </div>
                       <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <DialogTrigger className="h-7 w-7 text-muted-foreground hover:text-primary rounded-md inline-flex items-center justify-center transition-colors">
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="h-7 w-7 text-muted-foreground hover:text-primary"
+                          onClick={() => setSelectedGeneration(item)}
+                        >
                           <Maximize2 className="w-4 h-4" />
-                        </DialogTrigger>
+                        </Button>
                         <Button 
                           variant="ghost" 
                           size="icon" 

@@ -31,6 +31,8 @@ import { toast } from "sonner";
 import { Switch } from "@/components/ui/switch";
 import { useUser } from "@clerk/nextjs";
 import { getWorkspace, updateWorkspace } from "@/app/actions/workspace";
+import { seedOrganicData } from "@/app/actions/seed";
+import { Database, Sparkles as SparkleIcon } from "lucide-react";
 
 export default function SettingsPage() {
   const { user } = useUser();
@@ -93,6 +95,23 @@ export default function SettingsPage() {
       }
     } catch (error: any) {
       toast.error(error.message || "Failed to save workspace settings.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleSeedData = async () => {
+    setIsSaving(true);
+    try {
+      const result = await seedOrganicData();
+      if (result.success) {
+        toast.success(result.message || "Data seeded successfully!");
+        fetchWorkspace();
+      } else {
+        throw new Error(result.error);
+      }
+    } catch (error: any) {
+      toast.error(error.message || "Failed to seed demo data.");
     } finally {
       setIsSaving(false);
     }
@@ -200,6 +219,36 @@ export default function SettingsPage() {
                 Save Workspace
               </Button>
             </CardFooter>
+          </Card>
+
+          {/* Presentation Mode Seeding */}
+          <Card className="bg-card border-primary/20 bg-primary/5 overflow-hidden shadow-soft">
+            <CardHeader className="bg-primary/10 border-b border-primary/20">
+              <CardTitle className="text-primary flex items-center gap-2 font-bold italic">
+                <Database className="w-5 h-5" /> Client Presentation Mode
+              </CardTitle>
+              <CardDescription className="text-primary/80 font-medium italic">Instantly populate your workspace with professional organic data for demos.</CardDescription>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+                <div className="space-y-1">
+                  <h4 className="font-bold text-foreground mb-1 uppercase text-xs tracking-wider flex items-center gap-2">
+                    <SparkleIcon className="w-3.5 h-3.5 text-primary" /> Seed Mock Data
+                  </h4>
+                  <p className="text-xs text-muted-foreground max-w-sm font-medium italic leading-relaxed">
+                    This will add 7 days of realistic AI history, mock team members, and high-quality content examples to your dashboard. Perfect for showing clients how the app looks when active.
+                  </p>
+                </div>
+                <Button 
+                  onClick={handleSeedData} 
+                  disabled={isSaving}
+                  className="bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20 font-bold h-11 px-6 min-w-[200px]"
+                >
+                  {isSaving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Database className="w-4 h-4 mr-2" />}
+                  Seed Demo Data
+                </Button>
+              </div>
+            </CardContent>
           </Card>
 
           {/* Danger Zone */}
