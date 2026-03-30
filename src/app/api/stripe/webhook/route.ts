@@ -1,4 +1,4 @@
-import { stripe } from "@/lib/stripe";
+import { getStripe } from "@/lib/stripe";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
@@ -9,6 +9,7 @@ export async function POST(req: Request) {
   const signature = (await headers()).get("Stripe-Signature") as string;
 
   let event: Stripe.Event;
+  const stripe = getStripe();
 
   try {
     event = stripe.webhooks.constructEvent(

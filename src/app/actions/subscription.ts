@@ -1,7 +1,7 @@
 "use server";
 
 import { auth } from "@clerk/nextjs/server";
-import { stripe } from "@/lib/stripe";
+import { getStripe } from "@/lib/stripe";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { revalidatePath } from "next/cache";
 
@@ -25,6 +25,7 @@ export async function syncSubscription() {
 
     // 2. Fetch all customers from Stripe with this email
     // (In production, we would use stripe_customer_id, but here we scan as a fallback)
+    const stripe = getStripe();
     const customers = await stripe.customers.list({
       limit: 10, // Check recent customers
     });

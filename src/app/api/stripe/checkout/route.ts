@@ -1,4 +1,4 @@
-import { stripe } from "@/lib/stripe";
+import { getStripe } from "@/lib/stripe";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
@@ -39,6 +39,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Stripe is not configured in this environment" }, { status: 500 });
     }
 
+    const stripe = getStripe();
     const stripeSession = await stripe.checkout.sessions.create({
       success_url: absoluteUrl("/billing?success=1"),
       cancel_url: absoluteUrl("/billing?canceled=1"),
