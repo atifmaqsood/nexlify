@@ -19,11 +19,11 @@ export async function POST(req: Request) {
     // 1. Initialize the official stable Google Generative AI SDK
     const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENERATIVE_AI_API_KEY!);
 
-    // 2. Use gemini-1.5-flash for the best balance of speed and quality
-    const model = genAI.getGenerativeModel(
-      { model: "gemini-1.5-flash" },
-      { apiVersion: "v1" }
-    );
+    // 2. Choose model (allow override via env). If the chosen model isn't
+    //    available for generateContent, we'll fall back to a compatible one
+    //    discovered via ListModels.
+    const preferredModel = process.env.GOOGLE_GENERATIVE_AI_MODEL || "gemini-1.5-flash";
+    let model = genAI.getGenerativeModel({ model: preferredModel }, { apiVersion: "v1" });
 
     // 3. Sophisticated System Prompts for Industry-Leading Output
     const systemPrompts: Record<string, string> = {
@@ -52,8 +52,47 @@ export async function POST(req: Request) {
       Ensure the output is high-impact, industry-standard content.
     `;
 
-    // 4. Start streaming
-    const result = await model.generateContentStream(prompt);
+    // 4. Try preferred model; if it fails, query ListModels API and pick a compatible one.
+    let result;
+
+    try {
+      model = genAI.getGenerativeModel({ model: preferredModel });
+      result = await model.generateContentStream(prompt);
+    } catch (err: any) {
+      console.warn(
+        `Preferred model ${preferredModel} failed, attempting to find available models...`
+      );
+
+      // Fetch available models from the API
+      try {
+        const listUrl = `https://generativelanguage.googleapis.com/v1beta/models?key=${process.env.GOOGLE_GENERATIVE_AI_API_KEY}`;
+        const listRes = await fetch(listUrl);
+        const listData = (await listRes.json()) as any;
+
+        const models = listData.models || [];
+        console.info("Available models:", models.map((m: any) => m.name));
+
+        // Find the first model that supports generateContent
+        const compatible = models.find((m: any) => {
+          const methods = m.supportedGenerationMethods || [];
+          return methods.includes("generateContent");
+        });
+
+        if (!compatible) {
+          throw new Error(
+            `No models support generateContent. Available: ${models.map((m: any) => m.name).join(", ")}`
+          );
+        }
+
+        const modelName = compatible.name;
+        console.info("Using compatible model:", modelName);
+        model = genAI.getGenerativeModel({ model: modelName });
+        result = await model.generateContentStream(prompt);
+      } catch (listErr: any) {
+        console.error("Failed to discover or use compatible model:", listErr);
+        throw err; // Re-throw original error
+      }
+    }
 
     const encoder = new TextEncoder();
     let fullText = "";

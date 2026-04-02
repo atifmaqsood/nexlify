@@ -103,42 +103,42 @@ export function AIToolForm({ toolType, promptTemplate }: AIToolFormProps) {
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
       {/* Input Form */}
       <Card className="bg-card border-border shadow-soft h-fit">
-        <CardHeader>
-          <CardTitle className="text-lg font-bold flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-primary" />
+        <CardHeader className="p-4 sm:p-6">
+          <CardTitle className="text-base sm:text-lg font-bold flex items-center gap-2">
+            <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
             Configure {toolType}
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-4 sm:p-6">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 sm:space-y-6">
               <FormField
                 control={form.control}
                 name="topic"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-sm font-bold text-foreground italic px-1">Topic / Title</FormLabel>
+                    <FormLabel className="text-xs sm:text-sm font-bold text-foreground italic px-1">Topic / Title</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g. Benefits of Remote Work" {...field} className="bg-muted/30 h-11 border-border font-medium" />
+                      <Input placeholder="e.g. Benefits of Remote Work" {...field} className="bg-muted/30 h-10 sm:h-11 border-border font-medium text-sm" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3 sm:gap-4">
                 <FormField
                   control={form.control}
                   name="tone"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-sm font-bold text-foreground italic px-1">Tone</FormLabel>
+                      <FormLabel className="text-xs sm:text-sm font-bold text-foreground italic px-1">Tone</FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
-                          <SelectTrigger className="bg-muted/30 h-11 border-border font-medium">
+                          <SelectTrigger className="bg-muted/30 h-10 sm:h-11 border-border font-medium text-sm">
                             <SelectValue placeholder="Select tone" />
                           </SelectTrigger>
                         </FormControl>
@@ -159,10 +159,10 @@ export function AIToolForm({ toolType, promptTemplate }: AIToolFormProps) {
                   name="length"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-sm font-bold text-foreground italic px-1">Length</FormLabel>
+                      <FormLabel className="text-xs sm:text-sm font-bold text-foreground italic px-1">Length</FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
-                          <SelectTrigger className="bg-muted/30 h-11 border-border font-medium">
+                          <SelectTrigger className="bg-muted/30 h-10 sm:h-11 border-border font-medium text-sm">
                             <SelectValue placeholder="Select length" />
                           </SelectTrigger>
                         </FormControl>
@@ -183,9 +183,9 @@ export function AIToolForm({ toolType, promptTemplate }: AIToolFormProps) {
                 name="keywords"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-sm font-bold text-foreground italic px-1">Keywords (Optional)</FormLabel>
+                    <FormLabel className="text-xs sm:text-sm font-bold text-foreground italic px-1">Keywords (Optional)</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g. productivity, saas, growth" {...field} className="bg-muted/30 h-11 border-border font-medium" />
+                      <Input placeholder="e.g. productivity, saas, growth" {...field} className="bg-muted/30 h-10 sm:h-11 border-border font-medium text-sm" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -194,13 +194,14 @@ export function AIToolForm({ toolType, promptTemplate }: AIToolFormProps) {
 
               <Button 
                 type="submit" 
-                className="w-full bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20 h-11 font-bold italic tracking-wide"
+                className="w-full bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20 h-10 sm:h-11 font-bold italic tracking-wide text-sm"
                 disabled={isGenerating}
               >
                 {isGenerating ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Generating Magic...
+                    <span className="hidden sm:inline">Generating Magic...</span>
+                    <span className="sm:hidden">Generating...</span>
                   </>
                 ) : (
                   <>
@@ -215,9 +216,9 @@ export function AIToolForm({ toolType, promptTemplate }: AIToolFormProps) {
       </Card>
 
       {/* Output Display */}
-      <Card className="bg-card border-border shadow-soft flex flex-col min-h-[400px]">
-        <CardHeader className="flex flex-row items-center justify-between border-b border-border/50 pb-4">
-          <CardTitle className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-muted-foreground/60 italic flex items-center gap-2">
+      <Card className="bg-card border-border shadow-soft flex flex-col min-h-[400px] sm:min-h-[400px]">
+        <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-border/50 pb-3 sm:pb-4 gap-3 sm:gap-0 p-4 sm:p-6">
+          <CardTitle className="text-[10px] sm:text-xs font-extrabold uppercase tracking-[0.2em] text-muted-foreground/60 italic flex items-center gap-2">
             Output Results
             {!isGenerating && output && (
               <span className="flex items-center gap-1 text-success lowercase tracking-normal font-bold">
@@ -226,33 +227,33 @@ export function AIToolForm({ toolType, promptTemplate }: AIToolFormProps) {
             )}
           </CardTitle>
           {hasGenerated && (
-            <div className="flex items-center gap-2">
-              <Button variant="ghost" size="icon" onClick={handleReset} className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted">
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <Button variant="ghost" size="icon" onClick={handleReset} className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted flex-1 sm:flex-initial">
                 <RotateCcw className="w-4 h-4" />
               </Button>
-              <Button variant="ghost" size="icon" onClick={copyToClipboard} className="h-8 w-8 text-muted-foreground hover:text-primary hover:bg-primary/10">
+              <Button variant="ghost" size="icon" onClick={copyToClipboard} className="h-8 w-8 text-muted-foreground hover:text-primary hover:bg-primary/10 flex-1 sm:flex-initial">
                 <Copy className="w-4 h-4" />
               </Button>
             </div>
           )}
         </CardHeader>
-        <CardContent className="flex-1 p-6 overflow-y-auto custom-scrollbar">
+        <CardContent className="flex-1 p-4 sm:p-6 overflow-y-auto custom-scrollbar">
           {!hasGenerated ? (
-            <div className="h-full flex flex-col items-center justify-center text-center opacity-40 py-20 grayscale">
-              <div className="w-16 h-16 rounded-2xl border-2 border-dashed border-muted-foreground flex items-center justify-center mb-6 ring-8 ring-muted/50">
-                <Sparkles className="w-8 h-8 text-muted-foreground" />
+            <div className="h-full flex flex-col items-center justify-center text-center opacity-40 py-12 sm:py-20 grayscale">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl border-2 border-dashed border-muted-foreground flex items-center justify-center mb-4 sm:mb-6 ring-8 ring-muted/50">
+                <Sparkles className="w-6 h-6 sm:w-8 sm:h-8 text-muted-foreground" />
               </div>
-              <h3 className="font-bold text-lg mb-2 text-foreground uppercase tracking-widest italic">Awaiting Input</h3>
-              <p className="text-xs text-muted-foreground max-w-[250px] font-medium leading-relaxed italic">
+              <h3 className="font-bold text-base sm:text-lg mb-2 text-foreground uppercase tracking-widest italic">Awaiting Input</h3>
+              <p className="text-xs sm:text-sm text-muted-foreground max-w-[250px] font-medium leading-relaxed italic">
                 Configure your request on the left and see the AI content appear here in real-time.
               </p>
             </div>
           ) : (
             <div className={cn(
-              "whitespace-pre-wrap text-foreground leading-relaxed transition-opacity duration-500 font-medium",
+              "whitespace-pre-wrap text-sm sm:text-base text-foreground leading-relaxed transition-opacity duration-500 font-medium",
               isGenerating ? "opacity-70" : "opacity-100"
             )}>
-              {output || (isGenerating && <span className="text-primary italic font-bold">Initializing Gemini 1.5 engine...</span>)}
+              {output || (isGenerating && <span className="text-primary italic font-bold">Initializing Gemini engine...</span>)}
               {isGenerating && (
                 <span className="inline-block w-2 h-4 bg-primary animate-pulse ml-1 align-middle" />
               )}

@@ -99,31 +99,33 @@ export default function AIToolsPage() {
   };
 
   return (
-    <div className="space-y-8 pb-10">
+    <div className="space-y-6 sm:space-y-8 pb-10">
       <div>
-        <h2 className="text-3xl font-bold tracking-tight text-foreground mb-2">AI Tools</h2>
-        <p className="text-muted-foreground">Select a tool and start generating high-quality AI content.</p>
+        <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground mb-2">AI Tools</h2>
+        <p className="text-sm sm:text-base text-muted-foreground">Select a tool and start generating high-quality AI content.</p>
       </div>
 
       <Tabs defaultValue="blog" className="w-full">
-        <TabsList className="bg-muted/50 p-1 border border-border h-12 gap-2 mb-8">
+        <TabsList className="bg-muted/50 p-1 border border-border h-auto gap-1 sm:gap-2 mb-6 sm:mb-8 flex flex-wrap sm:flex-nowrap items-center">
           {tools.map((tool) => (
             <TabsTrigger 
               key={tool.id} 
               value={tool.id}
-              className="px-4 py-2 text-sm font-medium transition-all data-[state=active]:bg-primary data-[state=active]:text-white gap-2"
+              className="px-2 sm:px-4 py-1 sm:py-2 text-xs sm:text-sm font-medium transition-all data-[state=active]:bg-primary data-[state=active]:text-white gap-1 sm:gap-2"
             >
-              <tool.icon className="w-4 h-4" />
-              {tool.name}
+              <tool.icon className="w-3 h-3 sm:w-4 sm:h-4" />
+              <span className="hidden sm:inline">{tool.name}</span>
+              <span className="sm:hidden">{tool.name.split(" ")[0]}</span>
             </TabsTrigger>
           ))}
+          <div className="flex-1 sm:flex-initial"></div>
           <TabsTrigger 
             value="history"
             onClick={fetchHistory}
-            className="px-4 py-2 text-sm font-medium transition-all data-[state=active]:bg-primary data-[state=active]:text-white gap-2"
+            className="px-3 sm:px-4 py-1 sm:py-2 text-xs sm:text-sm font-medium transition-all bg-muted/40 hover:bg-muted/60 data-[state=active]:bg-primary data-[state=active]:text-white gap-1 sm:gap-2 ml-auto sm:ml-0"
           >
-            <History className="w-4 h-4" />
-            History
+            <History className="w-3 h-3 sm:w-4 sm:h-4" />
+            <span className="hidden sm:inline">History</span>
           </TabsTrigger>
         </TabsList>
 
@@ -135,43 +137,43 @@ export default function AIToolsPage() {
 
         <TabsContent value="history" className="mt-0">
           {isLoading ? (
-            <div className="flex flex-col items-center justify-center py-24 gap-4">
+            <div className="flex flex-col items-center justify-center py-16 sm:py-24 gap-4">
               <span className="relative flex h-8 w-8">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-20"></span>
                 <Loader2 className="relative w-8 h-8 text-primary animate-spin" />
               </span>
-              <p className="text-sm text-muted-foreground animate-pulse">Loading your history...</p>
+              <p className="text-xs sm:text-sm text-muted-foreground animate-pulse">Loading your history...</p>
             </div>
           ) : history.length === 0 ? (
-            <div className="bg-card border border-border rounded-xl p-12 text-center opacity-50">
-              <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mx-auto mb-4">
-                <History className="w-8 h-8 text-muted-foreground" />
+            <div className="bg-card border border-border rounded-xl p-8 sm:p-12 text-center opacity-50">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-muted flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                <History className="w-6 h-6 sm:w-8 sm:h-8 text-muted-foreground" />
               </div>
-              <h3 className="font-bold text-lg mb-2 text-foreground">Generation History</h3>
-              <p className="text-sm text-muted-foreground max-w-sm mx-auto">
+              <h3 className="font-bold text-base sm:text-lg mb-2 text-foreground">Generation History</h3>
+              <p className="text-xs sm:text-sm text-muted-foreground max-w-sm mx-auto">
                 You haven't generated any content yet. Once you do, your history will appear here.
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
               {history.map((item) => (
                 <Card key={item.id} className="bg-card border-border shadow-soft group hover:border-primary/30 transition-colors">
-                  <CardContent className="p-4 space-y-3">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20 text-[10px] uppercase font-bold px-2 py-0">
+                  <CardContent className="p-3 sm:p-4 space-y-3">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20 text-[9px] sm:text-[10px] uppercase font-bold px-2 py-0">
                           {item.tool_type}
                         </Badge>
-                        <span className="text-[10px] text-muted-foreground flex items-center gap-1 font-medium italic">
+                        <span className="text-[9px] sm:text-[10px] text-muted-foreground flex items-center gap-1 font-medium italic">
                           <Clock className="w-3 h-3" /> 
                           {new Date(item.created_at).toLocaleDateString()}
                         </span>
                       </div>
-                      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity w-full sm:w-auto">
                         <Button 
                           variant="ghost" 
                           size="icon" 
-                          className="h-7 w-7 text-muted-foreground hover:text-primary"
+                          className="h-7 w-7 text-muted-foreground hover:text-primary flex-1 sm:flex-initial"
                           onClick={() => setSelectedGeneration(item)}
                         >
                           <Maximize2 className="w-4 h-4" />
@@ -179,7 +181,7 @@ export default function AIToolsPage() {
                         <Button 
                           variant="ghost" 
                           size="icon" 
-                          className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                          className="h-7 w-7 text-muted-foreground hover:text-destructive flex-1 sm:flex-initial"
                           onClick={() => handleDelete(item.id)}
                         >
                           <Trash2 className="w-4 h-4" />
